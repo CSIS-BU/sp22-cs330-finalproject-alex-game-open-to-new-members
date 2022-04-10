@@ -2,7 +2,7 @@ default: cpp
 
 all: cpp
 
-CC=gcc
+CC=g++
 
 cpp: hangman-client hangman-server
 
