@@ -1,2 +1,2 @@
-client_server/hangman-client
-client_server/hangman-server
+client_server-cpp/hangman-client
+client_server-cpp/hangman-server

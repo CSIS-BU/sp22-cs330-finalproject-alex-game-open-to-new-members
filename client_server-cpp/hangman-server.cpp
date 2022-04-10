@@ -1,14 +1,13 @@
 
-extern "C"{
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-#include <strings.h>
 #include <stdlib.h>
 #include <unistd.h>
-}
+#include <strings.h>
 
 #include <string>
 #include <iostream>
@@ -53,6 +52,7 @@ main(int argc, char** argv)
  exit(1);
  }
  while ( (buf_len = recv(new_s, buf, sizeof(buf), 0)) ) {
+     
  fwrite(buf, 1, buf_len, stdout);
  }
  fflush(stdout);

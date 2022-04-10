@@ -1,19 +1,19 @@
-extern "C"{
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-#include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-}
+#include <strings.h>
+
 #define MAX_SIZE 2048
 
 #include <string>
 #include <iostream>
 
-
+using namespace std;
 int main(int argc, char *argv[])
 {
     FILE *fp;
@@ -57,9 +57,14 @@ int main(int argc, char *argv[])
         close(s);
         exit(1);
     }
+    else {
+        printf("Connected to server\n");
+    }
     int size;
-    while ((size = fread(buf, 1, MAX_SIZE, stdin)))
+    string plusBuffer = "";
+    while ((cin.get(plusBuffer, MAX_SIZE - 1)))
     {
+        std::cout << "Sending message: " << plusBuffer << "\n";
         if (send(s, buf, size, 0) < 0)
         {
             perror("client: send");
