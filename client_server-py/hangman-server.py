@@ -6,6 +6,7 @@
 
 import sys
 import socket
+from typing import Counter
 
 SEND_BUFFER_SIZE = 2048
 RECV_BUFFER_SIZE = 2048
@@ -52,16 +53,30 @@ def server(server_port):
         currentWord = ''
 
         #Getting the chosenWord from the client
-        chosenWord = input('Please chose the Word to guess. ')
+        chosenWord = input('Please chose the Word to guess. ').upper()
 
         # Generate the currentWord based on the chosenWord
         # Fill current word with dashes equal to chosenWord length
+        wordLength = chosenWord.count() 
+        currentWord.ljust(wordLength,'_')
 
-        print("GameData: Segments: {seg}, Guessed Chars: {gchar}, currentWord: {cword}".format(seg = hangmanSegments, gchar = guessedCharacters, cword = currentWord))
 
         #Getting the guessed LETTER from the client
-        guessedLetter = input( 'Please chose a letter to guess.  ')
+        guessedLetter = input( 'Please chose a letter to guess.  ').upper()
         
+        # If the guessedLetter matches the character in the Chosen Word 
+        # Loop through the chosenWord and find any macth and replace it in the currentWord
+        # If macth not found -1 to the segement
+        # Add the guessed letter to the guessedCharacter[]
+        while True:
+
+             print("GameData: Segments: {seg}, Guessed Chars: {gchar}, currentWord: {cword}".format(seg = hangmanSegments, gchar = guessedCharacters, cword = currentWord))
+             guessedLetter = input( 'Please chose a letter to guess.  ').upper()
+
+             for i in range(0,len(chosenWord)):
+                 if guessedLetter == chosenWord[i]:
+                     
+
         
 
 
