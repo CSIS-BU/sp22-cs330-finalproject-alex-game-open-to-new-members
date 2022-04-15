@@ -7,6 +7,7 @@
 import sys
 import socket
 
+SEND_BUFFER_SIZE = 2048
 RECV_BUFFER_SIZE = 2048
 QUEUE_LENGTH = 10
 
@@ -33,8 +34,10 @@ def server(server_port):
             with connection:
                 while True:
                     data = connection.recv(RECV_BUFFER_SIZE)
-                    if not data: break
                     sys.stdout.buffer.raw.write(data)
+
+                    msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
+                    sendmsg = connection.sendall(msg)
                 sys.stdout.flush()
 
 def main():

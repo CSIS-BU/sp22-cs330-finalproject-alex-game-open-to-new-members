@@ -9,6 +9,7 @@ import random
 import string
 
 # Size of chunks the client sends messages to the server with
+RECV_BUFFER_SIZE = 2048
 SEND_BUFFER_SIZE = 2048
 # client(): Open socket and send message from sys.stdin
 def client(server_ip, server_port):
@@ -23,9 +24,10 @@ def client(server_ip, server_port):
         with open(0,'rb'):
             while True:
                 msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
-                if not msg: 
-                    return
                 sendmsg = sock.sendall(msg)
+                data = sock.recv(RECV_BUFFER_SIZE)
+                sys.stdout.buffer.raw.write(data)
+            sys.stdout.flush()
 
 
 def main():
