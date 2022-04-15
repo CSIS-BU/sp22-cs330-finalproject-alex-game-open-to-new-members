@@ -29,6 +29,7 @@ def server(server_port):
 
         # Loops until a connection is accepted
         # When a new connection is accpeted it loops through and recieves all the chunks of data the client sends to the server and then closes the connection
+        '''       
         while True:
             connection, address = sock.accept()
             with connection:
@@ -39,6 +40,24 @@ def server(server_port):
                     msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
                     sendmsg = connection.sendall(msg)
                 sys.stdout.flush()
+        '''
+    
+        chosenWord = ''
+        guessedLetter = ''
+        hangmanSegments = 6
+
+ 
+        #Getting the chosenWord from the client
+        chosenWord = input('Please chose the Word to guess. ')
+        #Getting the guessed LETTER from the client
+        guessedLetter = input( 'Please chose a letter to guess.  ')
+        
+        
+
+
+
+
+
 
 def main():
     """Parse command-line argument and call server function """
