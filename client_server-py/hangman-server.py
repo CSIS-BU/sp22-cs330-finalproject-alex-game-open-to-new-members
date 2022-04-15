@@ -45,10 +45,20 @@ def server(server_port):
         chosenWord = ''
         guessedLetter = ''
         hangmanSegments = 6
+        guessedCharacters = []
 
- 
+        # Word thats in play thats being guessed on
+        # Ex. chosenWord: determine currentWord: de_t_r_m_i__e
+        currentWord = ''
+
         #Getting the chosenWord from the client
         chosenWord = input('Please chose the Word to guess. ')
+
+        # Generate the currentWord based on the chosenWord
+        # Fill current word with dashes equal to chosenWord length
+
+        print("GameData: Segments: {seg}, Guessed Chars: {gchar}, currentWord: {cword}".format(seg = hangmanSegments, gchar = guessedCharacters, cword = currentWord))
+
         #Getting the guessed LETTER from the client
         guessedLetter = input( 'Please chose a letter to guess.  ')
         
