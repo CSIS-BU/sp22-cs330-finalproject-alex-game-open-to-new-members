@@ -25,6 +25,7 @@ def client(server_ip, server_port):
             while True:
                 msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
                 sendmsg = sock.sendall(msg)
+                
                 data = sock.recv(RECV_BUFFER_SIZE)
                 sys.stdout.buffer.raw.write(data)
             sys.stdout.flush()
