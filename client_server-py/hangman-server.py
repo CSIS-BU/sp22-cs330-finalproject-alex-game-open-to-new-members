@@ -48,20 +48,18 @@ def server(server_port):
         hangmanSegments = 6
         guessedCharacters = []
 
-        # Word thats in play thats being guessed on
-        # Ex. chosenWord: determine currentWord: de_t_r_m_i__e
-        currentWord = ''
+
 
         #Getting the chosenWord from the client
         chosenWord = input('Please chose the Word to guess. ').upper()
 
-        # Generate the currentWord based on the chosenWord
-        # Fill current word with dashes equal to chosenWord length
-        currentWord.ljust(chosenWord.count(),'_')
+        # Word thats in play thats being guessed on
+        # Ex. chosenWord: determine currentWord: de_t_r_m_i__e
+        currentWord = ['_' for i in range(len(chosenWord))] 
 
 
         #Getting the guessed LETTER from the client
-        guessedLetter = input( 'Please chose a letter to guess.  ').upper()
+        #guessedLetter = input( 'Please chose a letter to guess.  ').upper()
         
         # If the guessedLetter matches the character in the Chosen Word 
         # Loop through the chosenWord and find any macth and replace it in the currentWord
@@ -69,21 +67,32 @@ def server(server_port):
         # Add the guessed letter to the guessedCharacter[]
         while True:
 
-            print("GameData: Segments: {seg}, Guessed Chars: {gchar}, currentWord: {cword}".format(seg = hangmanSegments, gchar = guessedCharacters, cword = currentWord))
-            try:
-                guessedLetter = input( 'Please chose a letter to guess.  ').upper()
-            except ValueError as e:
-                // Add a loop to a function to keep choosing guessed letters
-                guessedLetter = input( 'Please chose a letter to guess.  ').upper()
+            print("GameData: Segments: {seg}, Guessed Chars: {gchar}, currentWord: {cword}".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord)))
+            guessedLetter = ''
+            while guessedLetter == '':
+                try:
+                    guessedLetter = input( 'Please chose a letter to guess.  ').upper()
+                    check = guessedCharacters.index(guessedLetter)
+                    print('Character already chosen ')
+                    guessedLetter = ''
+                except ValueError as e:
+                    guessedCharacters.append(guessedLetter)
+                    # Add a loop to a function to keep choosing guessed letters
+                    # print("value chosen, : ", guess)
+                    
                 
             wrongGuessedLetter = True
             for i in range(0,len(chosenWord)):
                 if guessedLetter == chosenWord[i]:
-                    chosenWord[i] = guessedLetter
+                    currentWord[i] = guessedLetter
                     wrongGuessedLetter = False
             
             if wrongGuessedLetter:
-                hangmanSegments--;
+                hangmanSegments -= 1
+
+            if chosenWord == ''.join(currentWord):
+                print('Guessers Win!')
+                break
 
             if hangmanSegments == 0:
                 print("Game Over!")
