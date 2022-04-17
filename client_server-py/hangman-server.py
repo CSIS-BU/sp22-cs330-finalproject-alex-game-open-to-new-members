@@ -57,8 +57,7 @@ def server(server_port):
 
         # Generate the currentWord based on the chosenWord
         # Fill current word with dashes equal to chosenWord length
-        wordLength = chosenWord.count() 
-        currentWord.ljust(wordLength,'_')
+        currentWord.ljust(chosenWord.count(),'_')
 
 
         #Getting the guessed LETTER from the client
@@ -70,11 +69,25 @@ def server(server_port):
         # Add the guessed letter to the guessedCharacter[]
         while True:
 
-             print("GameData: Segments: {seg}, Guessed Chars: {gchar}, currentWord: {cword}".format(seg = hangmanSegments, gchar = guessedCharacters, cword = currentWord))
-             guessedLetter = input( 'Please chose a letter to guess.  ').upper()
+            print("GameData: Segments: {seg}, Guessed Chars: {gchar}, currentWord: {cword}".format(seg = hangmanSegments, gchar = guessedCharacters, cword = currentWord))
+            try:
+                guessedLetter = input( 'Please chose a letter to guess.  ').upper()
+            except ValueError as e:
+                // Add a loop to a function to keep choosing guessed letters
+                guessedLetter = input( 'Please chose a letter to guess.  ').upper()
+                
+            wrongGuessedLetter = True
+            for i in range(0,len(chosenWord)):
+                if guessedLetter == chosenWord[i]:
+                    chosenWord[i] = guessedLetter
+                    wrongGuessedLetter = False
+            
+            if wrongGuessedLetter:
+                hangmanSegments--;
 
-             for i in range(0,len(chosenWord)):
-                 if guessedLetter == chosenWord[i]:
+            if hangmanSegments == 0:
+                print("Game Over!")
+                break;
                      
 
         
