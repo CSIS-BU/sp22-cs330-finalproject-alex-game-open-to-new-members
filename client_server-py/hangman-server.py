@@ -12,6 +12,9 @@ SEND_BUFFER_SIZE = 2048
 RECV_BUFFER_SIZE = 2048
 QUEUE_LENGTH = 10
 
+def sendPacket(hangmanSegments, guessedCharacters, currentWord):
+    print("GameData: Segments: {seg}, Guessed Chars: {gchar}, currentWord: {cword}".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord)))
+
 # server() Listen on socket and print received message to sys.stdout
 def server(server_port):
 
@@ -67,7 +70,7 @@ def server(server_port):
         # Add the guessed letter to the guessedCharacter[]
         while True:
 
-            print("GameData: Segments: {seg}, Guessed Chars: {gchar}, currentWord: {cword}".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord)))
+            sendPacket(hangmanSegments, guessedCharacters, currentWord)
             guessedLetter = ''
             while guessedLetter == '':
                 try:
@@ -92,10 +95,12 @@ def server(server_port):
 
             if chosenWord == ''.join(currentWord):
                 print('Guessers Win!')
+                sendPacket(hangmanSegments, guessedCharacters, chosenWord)
                 break
 
             if hangmanSegments == 0:
                 print("Game Over!")
+                sendPacket(hangmanSegments, guessedCharacters, chosenWord)
                 break;
                      
 
