@@ -15,11 +15,18 @@ QUEUE_LENGTH = 2
 def recvPacket(connection):
     return connection.recv(RECV_BUFFER_SIZE)
 
+def recvStringPacket(connection):
+    recvPacket(connection).decode("utf-8",errors='ignore')[:-1]
+
 def sendMsgPacket(connection,msg):
     sendmsg = connection.sendall(msg)
 
 def sendGamePacket(hangmanSegments, guessedCharacters, currentWord):
     print("[Segments:{seg},Guessed Chars:{gchar},currentWord:{cword}]".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord)))
+
+def selectNextPlayer(playerNum):
+    playerNum = (playerNum + 1) % (QUEUE_LENGTH - 1)
+    return playerNum
 
 # server() Listen on socket and print received message to sys.stdout
 def server(server_port):
@@ -28,6 +35,7 @@ def server(server_port):
     HOST = "127.0.0.1" 
     PORT = server_port
     conn_list = []
+    playerNum = 0
 
     # Opens a socket and sets the socket mode to IPV4 and TCP
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -80,7 +88,7 @@ def server(server_port):
         #Getting the chosenWord from the first player in the connection list
         # (Remove later)chosenWord = input('Please chose the Word to guess. ').upper()
         sendMsgPacket(conn_list[0],b'Please chose the Word to guess:\n')
-        chosenWord = recvPacket(conn_list[0]).decode("utf-8",errors='ignore')[:-1].upper()
+        chosenWord = recvStringPacket(conn_list[0]).upper()
         print(chosenWord)
         if(chosenWord != 'HELLO'):
             print("Error WOrd is:",chosenWord)
@@ -93,16 +101,20 @@ def server(server_port):
         #Getting the guessed LETTER from the client
         #guessedLetter = input( 'Please chose a letter to guess.  ').upper()
         
+
         # If the guessedLetter matches the character in the Chosen Word 
         # Loop through the chosenWord and find any macth and replace it in the currentWord
         # If macth not found -1 to the segement
         # Add the guessed letter to the guessedCharacter[]
         while True:
+            playerNum = selectNextPlayer(playerNum)
             sendGamePacket(hangmanSegments, guessedCharacters, currentWord)
             guessedLetter = ''
             while guessedLetter == '':
                 try:
-                    guessedLetter = input( 'Please chose a letter to guess.  ').upper()
+                    # guessedLetter = input( 'Please chose a letter to guess.  ').upper()
+                    sendMsgPacket(conn_list[playerNum+1],b'Please chose a letter to guess\n')
+                    guessedLetter = recvStringPacket(conn_list[playerNum+1]).upper()
                     check = guessedCharacters.index(guessedLetter)
                     print('Character already chosen ')
                     guessedLetter = ''
