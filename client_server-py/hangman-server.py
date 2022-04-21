@@ -10,7 +10,7 @@ from typing import Counter
 
 SEND_BUFFER_SIZE = 2048
 RECV_BUFFER_SIZE = 2048
-QUEUE_LENGTH = 10
+QUEUE_LENGTH = 4
 
 def revcPacket(connection):
     return connection.recv(RECV_BUFFER_SIZE)
@@ -24,6 +24,7 @@ def server(server_port):
     # These variables denote the host (localhost) to bind itself to the server and the user passed in port
     HOST = "127.0.0.1" 
     PORT = server_port
+    conn_list = []
 
     # Opens a socket and sets the socket mode to IPV4 and TCP
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -48,7 +49,21 @@ def server(server_port):
                     sendmsg = connection.sendall(msg)
                 sys.stdout.flush()
         '''
+
+        '''
+        connection, address = sock.accept()
+        conn_list += [connection]
+        '''
     
+
+        # Wait for a first connection and then choose the first word
+
+        # Define fn for
+        connection, address = sock.accept()
+        conn_list += [connection]
+        print("Connection from {ip} on port {port}".format(ip=address[0], port=address[1]))
+        ################################
+        
         chosenWord = ''
         guessedLetter = ''
         hangmanSegments = 6
