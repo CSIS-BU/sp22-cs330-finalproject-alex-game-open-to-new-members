@@ -79,9 +79,12 @@ def server(server_port):
 
         #Getting the chosenWord from the first player in the connection list
         # (Remove later)chosenWord = input('Please chose the Word to guess. ').upper()
-        sendMsgPacket(conn_list[0],'Please chose the Word to guess:\n')
-        chosenWord = recvPacket(conn_list[0])
+        sendMsgPacket(conn_list[0],b'Please chose the Word to guess:\n')
+        chosenWord = recvPacket(conn_list[0]).decode("utf-8",errors='ignore')[:-1].upper()
         print(chosenWord)
+        if(chosenWord != 'HELLO'):
+            print("Error WOrd is:",chosenWord)
+            print("Correct word :","HELLO")
         # Word thats in play thats being guessed on
         # Ex. chosenWord: determine currentWord: de_t_r_m_i__e
         currentWord = ['_' for i in range(len(chosenWord))] 
@@ -120,12 +123,13 @@ def server(server_port):
 
             if chosenWord == ''.join(currentWord):
                 print('Guessers Win!')
-                sendGamePacket(hangmanSegments, guessedCharacters, chosenWord)
+                #sendGamePacket(hangmanSegments, guessedCharacters, chosenWord)
                 break
 
             if hangmanSegments == 0:
                 print("Game Over!")
-                sendGamePacket(hangmanSegments, guessedCharacters, chosenWord)
+                print("Word was: ",chosenWord)
+                #sendGamePacket(hangmanSegments, guessedCharacters, chosenWord)
                 break;
                      
 
