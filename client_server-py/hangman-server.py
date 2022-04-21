@@ -22,7 +22,7 @@ def sendMsgPacket(connection,msg):
     sendmsg = connection.sendall(msg)
 
 def sendGamePacket(hangmanSegments, guessedCharacters, currentWord, conn_list):
-    msg = "[Segments:{seg},Guessed Chars:{gchar},currentWord:{cword}]\n".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord))
+    msg = "[segments:{seg},guessedChars:{gchar},currentWord:{cword},playerNum:{pnum}]\n".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord), pnum = playerNum)
     for conn in conn_list:
         sendMsgPacket(conn, msg.encode("utf-8"))
     # Kept for debugging
