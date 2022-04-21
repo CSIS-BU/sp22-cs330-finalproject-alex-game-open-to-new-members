@@ -10,7 +10,7 @@ from typing import Counter
 
 SEND_BUFFER_SIZE = 2048
 RECV_BUFFER_SIZE = 2048
-QUEUE_LENGTH = 4
+QUEUE_LENGTH = 2
 
 def revcPacket(connection):
     return connection.recv(RECV_BUFFER_SIZE)
@@ -58,11 +58,11 @@ def server(server_port):
 
         # Wait for four people to connect to start the game
         # Define fn for
-        while len(conn_list) < 4:
+        while len(conn_list) < QUEUE_LENGTH:
             connection, address = sock.accept()
             conn_list += [connection]
             print("Connection from {ip} on port {port}".format(ip=address[0], port=address[1]))
-            print("Currently {cnlen}/{ql} players.".format(cnlen=len(conn_list)))
+            print("Currently {cnlen}/{ql} players.".format(cnlen=len(conn_list),ql=QUEUE_LENGTH))
         ###
         print('{QUEUE_LENGTH} players. Ready to start the game!')
 
