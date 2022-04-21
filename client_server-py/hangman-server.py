@@ -21,8 +21,12 @@ def recvStringPacket(connection):
 def sendMsgPacket(connection,msg):
     sendmsg = connection.sendall(msg)
 
-def sendGamePacket(hangmanSegments, guessedCharacters, currentWord):
-    print("[Segments:{seg},Guessed Chars:{gchar},currentWord:{cword}]".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord)))
+def sendGamePacket(hangmanSegments, guessedCharacters, currentWord, conn_list):
+    msg = "[Segments:{seg},Guessed Chars:{gchar},currentWord:{cword}]\n".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord))
+    for conn in conn_list:
+        sendMsgPacket(conn, msg.encode("utf-8"))
+    # Kept for debugging
+    print(msg)
 
 def selectNextPlayer(playerNum):
     playerNum = (playerNum + 1) % (QUEUE_LENGTH - 1)
@@ -108,15 +112,16 @@ def server(server_port):
         # Add the guessed letter to the guessedCharacter[]
         while True:
             playerNum = selectNextPlayer(playerNum)
-            sendGamePacket(hangmanSegments, guessedCharacters, currentWord)
+            sendGamePacket(hangmanSegments, guessedCharacters, currentWord,conn_list)
             guessedLetter = ''
             while guessedLetter == '':
                 try:
                     # guessedLetter = input( 'Please chose a letter to guess.  ').upper()
                     sendMsgPacket(conn_list[playerNum+1],b'Please chose a letter to guess\n')
                     guessedLetter = recvStringPacket(conn_list[playerNum+1]).upper()
-                    check = guessedCharacters.index(guessedLetter)
-                    print('Character already chosen ')
+                    if(guessedLetter != ''):
+                        check = guessedCharacters.index(guessedLetter)
+                        print('Character already chosen ')
                     guessedLetter = ''
                 except ValueError as e:
                     guessedCharacters.append(guessedLetter)
