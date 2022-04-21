@@ -23,11 +23,11 @@ def client(server_ip, server_port):
         # WHile a connection is open send all of the data rom the input stream to the server in chunks the size of SEND_BUFFER_SIZE
         with open(0,'rb'):
             while True:
-                msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
-                sendmsg = sock.sendall(msg)
-                
                 data = sock.recv(RECV_BUFFER_SIZE)
                 sys.stdout.buffer.raw.write(data)
+
+                msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
+                sendmsg = sock.sendall(msg)
             sys.stdout.flush()
 
 

@@ -12,8 +12,11 @@ SEND_BUFFER_SIZE = 2048
 RECV_BUFFER_SIZE = 2048
 QUEUE_LENGTH = 10
 
+def revcPacket(connection):
+    return connection.recv(RECV_BUFFER_SIZE)
+
 def sendPacket(hangmanSegments, guessedCharacters, currentWord):
-    print("GameData: Segments: {seg}, Guessed Chars: {gchar}, currentWord: {cword}".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord)))
+    print("Segments:{seg},Guessed Chars:{gchar},currentWord:{cword}".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord)))
 
 # server() Listen on socket and print received message to sys.stdout
 def server(server_port):
@@ -69,7 +72,6 @@ def server(server_port):
         # If macth not found -1 to the segement
         # Add the guessed letter to the guessedCharacter[]
         while True:
-
             sendPacket(hangmanSegments, guessedCharacters, currentWord)
             guessedLetter = ''
             while guessedLetter == '':
