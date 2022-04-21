@@ -9,6 +9,7 @@ import random
 import string
 
 # Size of chunks the client sends messages to the server with
+RECV_BUFFER_SIZE = 2048
 SEND_BUFFER_SIZE = 2048
 # client(): Open socket and send message from sys.stdin
 def client(server_ip, server_port):
@@ -22,10 +23,13 @@ def client(server_ip, server_port):
         # WHile a connection is open send all of the data rom the input stream to the server in chunks the size of SEND_BUFFER_SIZE
         with open(0,'rb'):
             while True:
-                msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
-                if not msg: 
-                    return
-                sendmsg = sock.sendall(msg)
+                data = sock.recv(RECV_BUFFER_SIZE)
+                sys.stdout.buffer.raw.write(data)
+
+                if(data.decode('utf8') == 'Please chose a letter to guess: ' or data.decode('utf8') == 'Please chose the Word to guess: '):
+                    msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
+                    sendmsg = sock.sendall(msg)
+            sys.stdout.flush()
 
 
 def main():
