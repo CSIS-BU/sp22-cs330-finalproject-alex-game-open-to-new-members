@@ -10,7 +10,7 @@ from typing import Counter
 
 SEND_BUFFER_SIZE = 2048
 RECV_BUFFER_SIZE = 2048
-QUEUE_LENGTH = 2
+QUEUE_LENGTH = 4
 
 def recvPacket(connection):
     return connection.recv(RECV_BUFFER_SIZE)
@@ -26,7 +26,7 @@ def broadcastMsgPacket(conn_list,msg):
         sendMsgPacket(conn, msg)
 
 def sendGamePacket(hangmanSegments, guessedCharacters, currentWord,playerNum, conn_list):
-    msg = "[segments:{seg},guessedChars:{gchar},currentWord:{cword},playerNum:{pnum}]\n".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord), pnum = playerNum)
+    msg = "[segments:{seg},guessedChars:{gchar},currentWord:{cword},playerNum:{pnum}]\n".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord), pnum = playerNum+1)
     broadcastMsgPacket(conn_list,msg.encode('utf-8'))
     # Kept for debugging
     print(msg)
@@ -81,9 +81,13 @@ def server(server_port):
             connection, address = sock.accept()
             conn_list += [connection]
             print("Connection from {ip} on port {port}".format(ip=address[0], port=address[1]))
-            print("Currently {cnlen}/{ql} players.".format(cnlen=len(conn_list),ql=QUEUE_LENGTH))
+            currPlayerMsg = "Currently {cnlen}/{ql} players.\n".format(cnlen=len(conn_list),ql=QUEUE_LENGTH)
+            broadcastMsgPacket(conn_list,currPlayerMsg.encode('utf-8'))
+            print(currPlayerMsg[:-1])
         ###
-        print('{ql} players. Ready to start the game!'.format(ql=QUEUE_LENGTH))
+        sgMsg = '{ql} players. Ready to start the game!\n'.format(ql=QUEUE_LENGTH)
+        broadcastMsgPacket(conn_list,sgMsg.encode('utf-8'))
+        print(sgMsg[:-1])
 
         chosenWord = ''
         guessedLetter = ''
@@ -114,7 +118,6 @@ def server(server_port):
         # If macth not found -1 to the segement
         # Add the guessed letter to the guessedCharacter[]
         while True:
-            playerNum = selectNextPlayer(playerNum)
             sendGamePacket(hangmanSegments, guessedCharacters, currentWord, playerNum, conn_list)
             guessedLetter = ''
             while guessedLetter == '':
@@ -155,7 +158,7 @@ def server(server_port):
                 print("Word was: ",chosenWord)
                 #sendGamePacket(hangmanSegments, guessedCharacters, chosenWord)
                 break;
-                     
+            playerNum = selectNextPlayer(playerNum)
 
         
 
