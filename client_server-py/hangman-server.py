@@ -12,10 +12,13 @@ SEND_BUFFER_SIZE = 2048
 RECV_BUFFER_SIZE = 2048
 QUEUE_LENGTH = 2
 
-def revcPacket(connection):
+def recvPacket(connection):
     return connection.recv(RECV_BUFFER_SIZE)
 
-def sendPacket(hangmanSegments, guessedCharacters, currentWord):
+def sendMsgPacket(connection,msg):
+    sendmsg = connection.sendall(msg)
+
+def sendGamePacket(hangmanSegments, guessedCharacters, currentWord):
     print("Segments:{seg},Guessed Chars:{gchar},currentWord:{cword}".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord)))
 
 # server() Listen on socket and print received message to sys.stdout
@@ -58,13 +61,14 @@ def server(server_port):
 
         # Wait for four people to connect to start the game
         # Define fn for
+        print("Socket successfully established, waiting for players...")
         while len(conn_list) < QUEUE_LENGTH:
             connection, address = sock.accept()
             conn_list += [connection]
             print("Connection from {ip} on port {port}".format(ip=address[0], port=address[1]))
             print("Currently {cnlen}/{ql} players.".format(cnlen=len(conn_list),ql=QUEUE_LENGTH))
         ###
-        print('{QUEUE_LENGTH} players. Ready to start the game!')
+        print('{ql} players. Ready to start the game!'.format(ql=QUEUE_LENGTH))
 
         chosenWord = ''
         guessedLetter = ''
@@ -73,9 +77,11 @@ def server(server_port):
 
 
 
-        #Getting the chosenWord from the client
-        chosenWord = input('Please chose the Word to guess. ').upper()
-
+        #Getting the chosenWord from the first player in the connection list
+        # (Remove later)chosenWord = input('Please chose the Word to guess. ').upper()
+        sendMsgPacket(conn_list[0],'Please chose the Word to guess:\n')
+        chosenWord = recvPacket(conn_list[0])
+        print(chosenWord)
         # Word thats in play thats being guessed on
         # Ex. chosenWord: determine currentWord: de_t_r_m_i__e
         currentWord = ['_' for i in range(len(chosenWord))] 
@@ -89,7 +95,7 @@ def server(server_port):
         # If macth not found -1 to the segement
         # Add the guessed letter to the guessedCharacter[]
         while True:
-            sendPacket(hangmanSegments, guessedCharacters, currentWord)
+            sendGamePacket(hangmanSegments, guessedCharacters, currentWord)
             guessedLetter = ''
             while guessedLetter == '':
                 try:
@@ -114,12 +120,12 @@ def server(server_port):
 
             if chosenWord == ''.join(currentWord):
                 print('Guessers Win!')
-                sendPacket(hangmanSegments, guessedCharacters, chosenWord)
+                sendGamePacket(hangmanSegments, guessedCharacters, chosenWord)
                 break
 
             if hangmanSegments == 0:
                 print("Game Over!")
-                sendPacket(hangmanSegments, guessedCharacters, chosenWord)
+                sendGamePacket(hangmanSegments, guessedCharacters, chosenWord)
                 break;
                      
 
