@@ -19,7 +19,7 @@ def sendMsgPacket(connection,msg):
     sendmsg = connection.sendall(msg)
 
 def sendGamePacket(hangmanSegments, guessedCharacters, currentWord):
-    print("Segments:{seg},Guessed Chars:{gchar},currentWord:{cword}".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord)))
+    print("[Segments:{seg},Guessed Chars:{gchar},currentWord:{cword}]".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord)))
 
 # server() Listen on socket and print received message to sys.stdout
 def server(server_port):
