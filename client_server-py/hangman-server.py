@@ -56,14 +56,16 @@ def server(server_port):
         '''
     
 
-        # Wait for a first connection and then choose the first word
-
+        # Wait for four people to connect to start the game
         # Define fn for
-        connection, address = sock.accept()
-        conn_list += [connection]
-        print("Connection from {ip} on port {port}".format(ip=address[0], port=address[1]))
-        ################################
-        
+        while len(conn_list) < 4:
+            connection, address = sock.accept()
+            conn_list += [connection]
+            print("Connection from {ip} on port {port}".format(ip=address[0], port=address[1]))
+            print("Currently {cnlen}/{ql} players.".format(cnlen=len(conn_list)))
+        ###
+        print('{QUEUE_LENGTH} players. Ready to start the game!')
+
         chosenWord = ''
         guessedLetter = ''
         hangmanSegments = 6
