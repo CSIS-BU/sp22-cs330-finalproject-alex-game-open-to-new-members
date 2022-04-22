@@ -31,7 +31,79 @@ def client(server_ip, server_port):
                     sendmsg = sock.sendall(msg)
             sys.stdout.flush()
 
-
+def displaySegments(hangmanSegments):
+    states = [  # 0: last state (GAME OVER!)
+                """
+                    +------+
+                   |      |
+                   |      O
+                   |     /|\ 
+                   |     / \ 
+                   |     
+                   +------
+                """,
+                # 1: head, body, both arms & 1 leg
+                """
+                   +------+
+                   |      |
+                   |      O
+                   |     /|\ 
+                   |     /
+                   |     
+                   +------
+                """,
+                # 2: head, body, & both arms
+                """
+                   +------+
+                   |      |
+                   |      O
+                   |     /|\ 
+                   |      
+                   |     
+                   +------
+                """,
+                # 3: head, body & 1 arm
+                """
+                   +------+
+                   |      |
+                   |      O
+                   |     /|
+                   |      
+                   |     
+                   +------
+                """,
+                # 4: head & body
+                """
+                   +------+
+                   |      |
+                   |      O
+                   |      |
+                   |      
+                   |     
+                   +------
+                """,
+                # 5: head
+                """
+                   +------+
+                   |      |
+                   |      O
+                   |    
+                   |      
+                   |     
+                   +------
+                """,
+                # 6: initial state (empty)
+                """
+                   +------+
+                   |      |
+                   |      
+                   |    
+                   |      
+                   |     
+                   +------
+                """
+    ]
+    return states[hangmanSegments]
 def main():
     """Parse command-line arguments and call client function """
     if len(sys.argv) != 3:
