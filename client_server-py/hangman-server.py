@@ -75,6 +75,7 @@ def server(server_port):
     
 
         # Wait for four people to connect to start the game
+
         # Define fn for
         print("Socket successfully established, waiting for players...")
         while len(conn_list) < QUEUE_LENGTH:
@@ -85,6 +86,7 @@ def server(server_port):
             broadcastMsgPacket(conn_list,currPlayerMsg.encode('utf-8'))
             print(currPlayerMsg[:-1])
         ###
+
         sgMsg = '{ql} players. Ready to start the game!\n'.format(ql=QUEUE_LENGTH)
         broadcastMsgPacket(conn_list,sgMsg.encode('utf-8'))
         print(sgMsg[:-1])
@@ -100,10 +102,7 @@ def server(server_port):
         # (Remove later)chosenWord = input('Please chose the Word to guess. ').upper()
         sendMsgPacket(conn_list[0],b'Please chose the Word to guess: ')
         chosenWord = recvStringPacket(conn_list[0]).upper()
-        print(chosenWord)
-        if(chosenWord != 'HELLO'):
-            print("Error WOrd is:",chosenWord)
-            print("Correct word :","HELLO")
+        
         # Word thats in play thats being guessed on
         # Ex. chosenWord: determine currentWord: de_t_r_m_i__e
         currentWord = ['_' for i in range(len(chosenWord))] 
