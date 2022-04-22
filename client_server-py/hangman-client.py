@@ -28,8 +28,7 @@ def client(server_ip, server_port):
                 
                 data = sock.recv(RECV_BUFFER_SIZE)
                 sys.stdout.buffer.raw.write(data)
-            sys.stdout.flush()
-
+            sys.stdout.flush()  
 
 def main():
     """Parse command-line arguments and call client function """
@@ -48,18 +47,5 @@ def receive(socket):
     else:
         return 1, socket.recv(value1)
  
-# Game will take in and send user input; will also check if the guesses are valid
-def playHangman(s):
-    while True:
-        pkt = receive(s)
-        messageFlag = pkt[0]
-        if messageFlag != 0:
-            message = pkt[1].decode('utf8')
-            print(message)
-        else:
-            chosenWord = pkt[1].decode('utf8')
-            incorrectGuesses = pkt[2].decode('utf8')
-            
-
 if __name__ == "__main__":
     main()
