@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 ###############################################################################
 # server-python.py
-# Name: Alex Hoerr
+# Name: Simfara R.
 ###############################################################################
 
 import sys
@@ -83,13 +83,12 @@ def server(server_port):
         hangmanSegments = 6
         guessedCharacters = []
 
-
-
         #Getting the chosenWord from the first player in the connection list
         # (Remove later)chosenWord = input('Please chose the Word to guess. ').upper()
         sendMsgPacket(conn_list[0],b'Please chose the Word to guess:\n')
         chosenWord = recvStringPacket(conn_list[0]).upper()
         print(chosenWord)
+
         if(chosenWord != 'HELLO'):
             print("Error WOrd is:",chosenWord)
             print("Correct word :","HELLO")
@@ -97,19 +96,19 @@ def server(server_port):
         # Ex. chosenWord: determine currentWord: de_t_r_m_i__e
         currentWord = ['_' for i in range(len(chosenWord))] 
 
-
         #Getting the guessed LETTER from the client
         #guessedLetter = input( 'Please chose a letter to guess.  ').upper()
-        
 
         # If the guessedLetter matches the character in the Chosen Word 
         # Loop through the chosenWord and find any macth and replace it in the currentWord
         # If macth not found -1 to the segement
         # Add the guessed letter to the guessedCharacter[]
+
         while True:
             playerNum = selectNextPlayer(playerNum)
             sendGamePacket(hangmanSegments, guessedCharacters, currentWord)
             guessedLetter = ''
+            print(displaySegments(hangmanSegments))
             while guessedLetter == '':
                 try:
                     # guessedLetter = input( 'Please chose a letter to guess.  ').upper()
@@ -123,7 +122,6 @@ def server(server_port):
                     # Add a loop to a function to keep choosing guessed letters
                     # print("value chosen, : ", guess)
                     
-                
             wrongGuessedLetter = True
             for i in range(0,len(chosenWord)):
                 if guessedLetter == chosenWord[i]:
@@ -139,17 +137,85 @@ def server(server_port):
                 break
 
             if hangmanSegments == 0:
+                print(displaySegments(hangmanSegments))
                 print("Game Over!")
                 print("Word was: ",chosenWord)
                 #sendGamePacket(hangmanSegments, guessedCharacters, chosenWord)
                 break;
-                     
 
-        
-
-
-
-
+def displaySegments(hangmanSegments):
+    states = [  # 0: last state (GAME OVER!)
+                """
+                    +------+
+                   |      |
+                   |      O
+                   |     /|\ 
+                   |     / \ 
+                   |     
+                   +------
+                """,
+                # 1: head, body, both arms & 1 leg
+                """
+                   +------+
+                   |      |
+                   |      O
+                   |     /|\ 
+                   |     /
+                   |     
+                   +------
+                """,
+                # 2: head, body, & both arms
+                """
+                   +------+
+                   |      |
+                   |      O
+                   |     /|\ 
+                   |      
+                   |     
+                   +------
+                """,
+                # 3: head, body & 1 arm
+                """
+                   +------+
+                   |      |
+                   |      O
+                   |     /|
+                   |      
+                   |     
+                   +------
+                """,
+                # 4: head & body
+                """
+                   +------+
+                   |      |
+                   |      O
+                   |      |
+                   |      
+                   |     
+                   +------
+                """,
+                # 5: head
+                """
+                   +------+
+                   |      |
+                   |      O
+                   |    
+                   |      
+                   |     
+                   +------
+                """,
+                # 6: initial state (empty)
+                """
+                   +------+
+                   |      |
+                   |      
+                   |    
+                   |      
+                   |     
+                   +------
+                """
+    ]
+    return states[hangmanSegments]
 
 
 def main():
