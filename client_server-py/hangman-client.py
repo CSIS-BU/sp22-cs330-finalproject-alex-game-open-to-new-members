@@ -26,8 +26,9 @@ def client(server_ip, server_port):
                 data = sock.recv(RECV_BUFFER_SIZE)
                 sys.stdout.buffer.raw.write(data)
 
-                msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
-                sendmsg = sock.sendall(msg)
+                if(data.decode('utf8') == 'Please chose a letter to guess: ' or data.decode('utf8') == 'Please chose the Word to guess: '):
+                    msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
+                    sendmsg = sock.sendall(msg)
             sys.stdout.flush()
 
 
