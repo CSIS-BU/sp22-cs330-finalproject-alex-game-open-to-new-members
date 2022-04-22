@@ -3,7 +3,6 @@
 # server-python.py
 # Name: Simfara R.
 ###############################################################################
-
 import sys
 import socket
 from typing import Counter
@@ -216,7 +215,6 @@ def displaySegments(hangmanSegments):
                 """
     ]
     return states[hangmanSegments]
-
 
 def main():
     """Parse command-line argument and call server function """
