@@ -29,17 +29,32 @@ def client(server_ip, server_port):
         with open(0,'rb'):
             while True:
                 data = sock.recv(RECV_BUFFER_SIZE)
-                sys.stdout.buffer.raw.write(data)
+                # sys.stdout.buffer.raw.write(data)
                 strData = data.decode('utf-8')
-                parsedData = strData.split(',')
+                parsedData = strData.split('|')
+
                 if parsedData[0] == '!':
-                    print("parsedData:",parsedData)
+                    #print("parsedData:",parsedData)
                     # Parse segments
-                    #start = s.find("segments:") + len("segments:")
-                    #end = s.find("|UGA")
-                    #substring = s[start:end]
-                    #hangmanSegments = int(substring)
-                    #print("segments:",)
+                    hangmanSegments = parsedData[1][-1]
+                    print("segments:",hangmanSegments)
+
+                    # Parse guessedCharacters
+                    guessedCharacters = []
+                    gCharString = parsedData[2][parsedData[2].find(':')+1:]
+                    gCharList = list(gCharString)
+                    for index in range(len(gCharList)):
+                        if gCharList[index].isalpha() == True:
+                            guessedCharacters.append(gCharList[index])
+                    print('guessedCharacters:',guessedCharacters)
+
+                    # Parse currentWord
+                    currentWord = parsedData[3][parsedData[3].find(':')+1:]
+                    print('currentWord: ',currentWord)
+
+                    # Parse playerNum
+                    playerNum = parsedData[4][-1]
+                    print("playerNum:",playerNum)
 
                 if(data.decode('utf8') == 'Please chose a letter to guess: ' or data.decode('utf8') == 'Please chose the Word to guess: '):
                     msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)

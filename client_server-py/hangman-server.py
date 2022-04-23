@@ -51,7 +51,7 @@ def broadcastMsgPacket(conn_list,msg):
         sendMsgPacket(conn, msg)
 
 def sendGamePacket(hangmanSegments, guessedCharacters, currentWord,playerNum, conn_list):
-    msg = "!,segments:{seg},guessedChars:{gchar},currentWord:{cword},playerNum:{pnum},!\n".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord), pnum = playerNum+1)
+    msg = "!|segments:{seg}|guessedChars:{gchar}|currentWord:{cword}|playerNum:{pnum}|!\n".format(seg = hangmanSegments, gchar = guessedCharacters, cword = ''.join(currentWord), pnum = playerNum+1)
     broadcastMsgPacket(conn_list,msg.encode('utf-8'))
     # Kept for debugging
     print(msg)
