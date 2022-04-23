@@ -10,24 +10,26 @@ import string
 # Size of chunks the client sends messages to the server with
 RECV_BUFFER_SIZE = 2048
 SEND_BUFFER_SIZE = 2048
-# client(): Open socket and send message from sys.stdin
 
+# client(): open socket and send message from sys.stdin
 def client(server_ip, server_port):
 
-    # Opens a socket and sets the socket mode to IPV4 and TCP
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+    #create an INET, STREAMing socket
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
         # Connects to the server using the ip and port the user specified
-        sock.connect((server_ip, server_port))
+        s.connect((server_ip, server_port))
 
-        # WHile a connection is open send all of the data rom the input stream to the server in chunks the size of SEND_BUFFER_SIZE
+        # While a connection is open send all of the data rom the input stream to the server in chunks the size of SEND_BUFFER_SIZE
         with open(0,'rb'):
             while True:
-                msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
-                sendmsg = sock.sendall(msg)
-                
-                data = sock.recv(RECV_BUFFER_SIZE)
+                data = socket.recv(RECV_BUFFER_SIZE)
+                if not data: break
                 sys.stdout.buffer.raw.write(data)
+                
+                if(data.decode('utf8') == 'Please choose a letter to guess:' or data.decode('utf8') == 'Please choose the word to guess: '):
+                    message = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
+                    sendmessage = socket.sendall(message)
             sys.stdout.flush()  
 
 def main():
