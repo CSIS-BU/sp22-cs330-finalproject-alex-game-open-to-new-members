@@ -14,6 +14,11 @@ SEND_BUFFER_SIZE = 2048
 # client(): Open socket and send message from sys.stdin
 def client(server_ip, server_port):
 
+    hangmanSegments = 0
+    guessedCharacters = []
+    currentWord = ''
+    playerNum = 0
+
     # Opens a socket and sets the socket mode to IPV4 and TCP
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
 
@@ -25,6 +30,16 @@ def client(server_ip, server_port):
             while True:
                 data = sock.recv(RECV_BUFFER_SIZE)
                 sys.stdout.buffer.raw.write(data)
+                strData = data.decode('utf-8')
+                parsedData = strData.split(',')
+                if parsedData[0] == '!':
+                    print("parsedData:",parsedData)
+                    # Parse segments
+                    #start = s.find("segments:") + len("segments:")
+                    #end = s.find("|UGA")
+                    #substring = s[start:end]
+                    #hangmanSegments = int(substring)
+                    #print("segments:",)
 
                 if(data.decode('utf8') == 'Please chose a letter to guess: ' or data.decode('utf8') == 'Please chose the Word to guess: '):
                     msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
