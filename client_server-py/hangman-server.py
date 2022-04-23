@@ -12,6 +12,31 @@ SEND_BUFFER_SIZE = 2048
 RECV_BUFFER_SIZE = 2048
 QUEUE_LENGTH = 4
 
+# Loops until a connection is accepted
+# Wait for four people to connect to start the game
+def startNewGame(conn_list,sock):
+        print("Socket successfully established, waiting for players...")
+        while len(conn_list) < QUEUE_LENGTH:
+            connection, address = sock.accept()
+            conn_list += [connection]
+            print("Connection from {ip} on port {port}".format(ip=address[0], port=address[1]))
+            currPlayerMsg = "Currently {cnlen}/{ql} players.\n".format(cnlen=len(conn_list),ql=QUEUE_LENGTH)
+            broadcastMsgPacket(conn_list,currPlayerMsg.encode('utf-8'))
+            print(currPlayerMsg[:-1])
+        
+
+        sgMsg = '{ql} players. Ready to start the game!\n'.format(ql=QUEUE_LENGTH)
+        broadcastMsgPacket(conn_list,sgMsg.encode('utf-8'))
+        print(sgMsg[:-1])
+
+        return ('','',6,[],0)
+
+def inputChooseWord(conn_list):
+        #Getting the chosenWord from the first player in the connection list
+        # (Remove later)chosenWord = input('Please chose the Word to guess. ').upper()
+        sendMsgPacket(conn_list[0],b'Please chose the Word to guess: ')
+        return recvStringPacket(conn_list[0]).upper()
+
 def recvPacket(connection):
     return connection.recv(RECV_BUFFER_SIZE)
 
@@ -53,65 +78,16 @@ def server(server_port):
         # Listens for new clients with a client queue defined by QUEUE_LENGTH
         sock.listen(QUEUE_LENGTH)
 
-        # Loops until a connection is accepted
-        # When a new connection is accpeted it loops through and recieves all the chunks of data the client sends to the server and then closes the connection
-        '''       
-        while True:
-            connection, address = sock.accept()
-            with connection:
-                while True:
-                    data = connection.recv(RECV_BUFFER_SIZE)
-                    sys.stdout.buffer.raw.write(data)
 
-                    msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
-                    sendmsg = connection.sendall(msg)
-                sys.stdout.flush()
-        '''
-
-        '''
-        connection, address = sock.accept()
-        conn_list += [connection]
-        '''
-    
-
-        # Wait for four people to connect to start the game
-
-        # Define fn for
-        print("Socket successfully established, waiting for players...")
-        while len(conn_list) < QUEUE_LENGTH:
-            connection, address = sock.accept()
-            conn_list += [connection]
-            print("Connection from {ip} on port {port}".format(ip=address[0], port=address[1]))
-            currPlayerMsg = "Currently {cnlen}/{ql} players.\n".format(cnlen=len(conn_list),ql=QUEUE_LENGTH)
-            broadcastMsgPacket(conn_list,currPlayerMsg.encode('utf-8'))
-            print(currPlayerMsg[:-1])
-        ###
-
-        sgMsg = '{ql} players. Ready to start the game!\n'.format(ql=QUEUE_LENGTH)
-        broadcastMsgPacket(conn_list,sgMsg.encode('utf-8'))
-        print(sgMsg[:-1])
-
-        chosenWord = ''
-        guessedLetter = ''
-        hangmanSegments = 6
-        guessedCharacters = []
-
-
-
-        #Getting the chosenWord from the first player in the connection list
-        # (Remove later)chosenWord = input('Please chose the Word to guess. ').upper()
-        sendMsgPacket(conn_list[0],b'Please chose the Word to guess: ')
-        chosenWord = recvStringPacket(conn_list[0]).upper()
+        chosenWord, guessedLetter, hangmanSegments, guessedCharacters,playerNum = startNewGame(conn_list,sock)
         
+        chosenWord = inputChooseWord(conn_list)
         # Word thats in play thats being guessed on
         # Ex. chosenWord: determine currentWord: de_t_r_m_i__e
         currentWord = ['_' for i in range(len(chosenWord))] 
 
 
         #Getting the guessed LETTER from the client
-        #guessedLetter = input( 'Please chose a letter to guess.  ').upper()
-        
-
         # If the guessedLetter matches the character in the Chosen Word 
         # Loop through the chosenWord and find any macth and replace it in the currentWord
         # If macth not found -1 to the segement
@@ -147,16 +123,23 @@ def server(server_port):
                 gameWinMsg = 'Guessers Win!\nWord was {cw}\n'.format(cw=chosenWord)
                 broadcastMsgPacket(conn_list, gameWinMsg.encode('utf-8'))
                 print('Guessers Win!')
-                #sendGamePacket(hangmanSegments, guessedCharacters, chosenWord)
-                break
+                conn_list.append(conn_list.pop(0))
+                chosenWord, guessedLetter, hangmanSegments, guessedCharacters, playerNum = startNewGame(conn_list,sock)
+                chosenWord = inputChooseWord(conn_list)
+                currentWord = ['_' for i in range(len(chosenWord))]
+                continue
 
             if hangmanSegments == 0:
                 gameOverMsg = 'Chooser Wins!\nWord was {cw}\n'.format(cw=chosenWord)
                 broadcastMsgPacket(conn_list, gameOverMsg.encode('utf-8'))
                 print("Game Over!")
                 print("Word was: ",chosenWord)
-                #sendGamePacket(hangmanSegments, guessedCharacters, chosenWord)
-                break;
+                conn_list.append(conn_list.pop(0))
+                chosenWord, guessedLetter, hangmanSegments, guessedCharacters, playerNum = startNewGame(conn_list,sock)
+                chosenWord = inputChooseWord(conn_list)
+                currentWord = ['_' for i in range(len(chosenWord))]
+                continue
+
             playerNum = selectNextPlayer(playerNum)
 
         
