@@ -10,7 +10,7 @@ from typing import Counter
 
 SEND_BUFFER_SIZE = 2048
 RECV_BUFFER_SIZE = 2048
-QUEUE_LENGTH = 4
+QUEUE_LENGTH = 2
 
 # Loops until a connection is accepted
 # Wait for four people to connect to start the game
@@ -141,13 +141,6 @@ def server(server_port):
                 continue
 
             playerNum = selectNextPlayer(playerNum)
-
-        
-
-
-
-
-
 
 def main():
     """Parse command-line argument and call server function """

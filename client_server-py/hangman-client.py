@@ -1,12 +1,28 @@
 ###############################################################################
 # client-python.py
-# Name: Alex Hoerr
+# Name: Alex Hoerr, Simfara
 ###############################################################################
 
 import sys
 import socket
 import random
 import string
+import curses
+
+# Test code for curses
+'''screen = curses.initscr()
+curses.noecho()
+curses.cbreak()
+screen.keypad(True)
+
+screen.addstr(5,5, "Let's begine ")
+
+curses.echo()
+curses.nocbreak()
+curses.keypad(False)
+curses.endwin()
+'''
+
 
 # Size of chunks the client sends messages to the server with
 RECV_BUFFER_SIZE = 2048
@@ -38,6 +54,9 @@ def client(server_ip, server_port):
                     # Parse segments
                     hangmanSegments = parsedData[1][-1]
                     print("segments:",hangmanSegments)
+
+                    #Error Msg: list indices must be integers or slices, not str
+                    #print(displaySegments(hangmanSegments))
 
                     # Parse guessedCharacters
                     guessedCharacters = []
