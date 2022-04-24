@@ -54,7 +54,7 @@ def client(server_ip, server_port):
                     print("segments:",hangmanSegments)
 
                     #Error Msg: list indices must be integers or slices, not str
-                    #print(displaySegments(hangmanSegments))
+                    print(displaySegments(hangmanSegments))
 
                     # Parse guessedCharacters
                     guessedCharacters = []
