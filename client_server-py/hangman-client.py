@@ -9,20 +9,6 @@ import random
 import string
 import curses
 
-# Test code for curses
-'''screen = curses.initscr()
-curses.noecho()
-curses.cbreak()
-screen.keypad(True)
-
-screen.addstr(5,5, "Let's begine ")
-
-curses.echo()
-curses.nocbreak()
-curses.keypad(False)
-curses.endwin()
-'''
-
 
 # Size of chunks the client sends messages to the server with
 RECV_BUFFER_SIZE = 2048
@@ -44,18 +30,29 @@ def client(server_ip, server_port):
         # WHile a connection is open send all of the data rom the input stream to the server in chunks the size of SEND_BUFFER_SIZE
         with open(0,'rb'):
             while True:
-                data = sock.recv(RECV_BUFFER_SIZE)
+            
+                #Preparing to initialize screen...
+                screen = curses.initscr()
+                # Wipe the screen buffer and set the cursor to 0,0
+                screen.clear()          
+                # Update the buffer, adding text
+                screen.addstr(0,0,'Lets begin the game of hangman')
+                # Changes go in to the screen buffer and only get displayed after calling `refresh()` to update
+                screen.refresh()
+        
+                
+                data = (sock.recv(RECV_BUFFER_SIZE))
                 strData = data.decode('utf-8')
                 parsedData = strData.split('|')
+                
                 if parsedData[0] == '!':
                     #print("parsedData:",parsedData)
                     # Parse segments
                     hangmanSegments = int(parsedData[1][-1])
-                    print("segments:",hangmanSegments)
-
-                    #Error Msg: list indices must be integers or slices, not str
-                    print(displaySegments(hangmanSegments))
-
+                    #print("segments:",hangmanSegments)
+                    #print(displaySegments(hangmanSegments))
+                    screen.addstr(0,0,displaySegments(hangmanSegments))
+                    
                     # Parse guessedCharacters
                     guessedCharacters = []
                     gCharString = parsedData[2][parsedData[2].find(':')+1:]
@@ -67,22 +64,34 @@ def client(server_ip, server_port):
 
                     # Parse currentWord
                     currentWord = parsedData[3][parsedData[3].find(':')+1:]
-                    print('currentWord: ',currentWord)
-
+                    #print('currentWord: ', currentWord)
+                    screen.addstr(1,0, currentWord)
+                   
                     # Parse playerNum
                     playerNum = parsedData[4][-1]
-                    print("playerNum:",playerNum)
+                    #print('playerNum:',playerNum)
+                    screen.addstr(2,0, playerNum)
+
+                    screen.refresh()
+                
                 else:
+                    
                     sys.stdout.buffer.raw.write(data)
+
                 if(data.decode('utf8') == 'Please chose a letter to guess: ' or data.decode('utf8') == 'Please chose the Word to guess: '):
                     msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
-                    sendmsg = sock.sendall(msg)
+                    sendmsg = sock.sendall(msg)   
+                
+                screen.clear()
+                screen.refresh()  
+                curses.endwin()
             sys.stdout.flush()
+
 
 def displaySegments(hangmanSegments):
     states = [  # 0: last state (GAME OVER!)
                 """
-                    +------+
+                   +------+
                    |      |
                    |      O
                    |     /|\ 
