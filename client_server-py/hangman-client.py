@@ -1,6 +1,6 @@
 ###############################################################################
 # client-python.py
-# Name: Alex Hoerr, Simfara
+# Name: Alex Hoerr, Simfara, Srushti
 ###############################################################################
 
 import sys
@@ -107,9 +107,22 @@ def client(server_ip, server_port):
                             msgStream = "".join(msg)
                             screen.addstr(13,34,msgStream)
                         screen.refresh()
-                        # TODO: ADD python escape sequence using ctrl+C (simfara)
-
-                    sendmsg = sock.sendall(''.join(msg).encode('utf-8'))
+                  
+                  #escape sequence using ctrl+C
+                  try:
+                    screen.keypad(1)
+                    client(screen)
+                    #setting screen back to normal
+                    screen.keypad(0)
+                    curses.echo(); curses.nocbreak
+                    curses.endwin()
+                  #in the case of an error, restore terminal
+                  except:
+                    screen.keypad(0)
+                    curses.echo(); curses.nocbreak()
+                    curses.endwin()
+                    
+                sendmsg = sock.sendall(''.join(msg).encode('utf-8'))
                 
                 #screen.clear()
                 #screen.refresh()  
