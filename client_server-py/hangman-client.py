@@ -80,6 +80,7 @@ def client(server_ip, server_port):
                     screen.refresh()
                 
                 else:
+                    screen.addstr(13,0,'                                                                  ')
                     screen.addstr(13,0,data.decode('utf-8'))
                     screen.refresh()
                     #sys.stdout.buffer.raw.write(data)

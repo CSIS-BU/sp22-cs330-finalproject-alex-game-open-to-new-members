@@ -41,7 +41,8 @@ def recvPacket(connection):
     return connection.recv(RECV_BUFFER_SIZE)
 
 def recvStringPacket(connection):
-    return recvPacket(connection).decode("utf-8",errors='ignore')[:-1]
+    #return recvPacket(connection).decode("utf-8",errors='ignore')[:-1]
+    return recvPacket(connection).decode("utf-8",errors='ignore')
 
 def sendMsgPacket(connection,msg):
     sendmsg = connection.sendall(msg)
