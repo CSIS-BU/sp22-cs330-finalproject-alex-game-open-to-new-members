@@ -36,7 +36,8 @@ def client(server_ip, server_port):
             # Wipe the screen buffer and set the cursor to 0,0
             screen.clear()
             screen.nodelay(False)
-            curses.echo()        
+            curses.noecho()
+            screen.keypad(True)        
             # Update the buffer, adding text
             screen.addstr(0,0,'Lets begin the game of hangman')
             displaySegments(6)
@@ -81,7 +82,7 @@ def client(server_ip, server_port):
                 
                 else:
                     screen.addstr(13,0,'                                                                  ')
-                    if strData[0] == '#':
+                    if data.decode('utf8')[0] == '#':
                         screen.addstr(13,0,data.decode('utf-8')[1:])
                     else:
                         screen.addstr(13,0,data.decode('utf-8'))
@@ -90,8 +91,25 @@ def client(server_ip, server_port):
 
                 if(data.decode('utf8')[0] == '#'):
                     #msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
-                    msg = screen.getstr(13,34,50)
-                    sendmsg = sock.sendall(msg)   
+                    msg = []
+                    while True:
+                        c = screen.getch()
+                        if c == curses.KEY_ENTER or c == 10 or c == 13:
+                            if len(msg) == 0:
+                                continue
+                            break
+                        if c == 8 or c == 127 or c == curses.KEY_BACKSPACE:
+                            if len(msg) > 0:
+                                msg = msg[:-1]
+                                screen.addstr("\b \b")
+                        else:
+                            msg.append(chr(c))
+                            msgStream = "".join(msg)
+                            screen.addstr(13,34,msgStream)
+                        screen.refresh()
+                        # TODO: ADD python escape sequence using ctrl+C (simfara)
+
+                    sendmsg = sock.sendall(''.join(msg).encode('utf-8'))
                 
                 #screen.clear()
                 #screen.refresh()  

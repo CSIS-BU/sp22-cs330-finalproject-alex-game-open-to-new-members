@@ -104,7 +104,7 @@ def server(server_port):
                     guessedLetter = recvStringPacket(conn_list[playerNum+1]).upper()
                     if(guessedLetter.isalpha() == True and len(guessedLetter) == 1):
                         check = guessedCharacters.index(guessedLetter)
-                        sendMsgPacket(conn_list[playerNum+1],b'#(Already chosen) choose another char: ')
+                        #sendMsgPacket(conn_list[playerNum+1],b'#(Already chosen) choose another: ')
                     guessedLetter = ''
                 except ValueError as e:
                     guessedCharacters.append(guessedLetter)
@@ -122,9 +122,9 @@ def server(server_port):
                 hangmanSegments -= 1
 
             if chosenWord == ''.join(currentWord):
-                # Error fixed Word not being displayed
-                gameWinMsg = 'Guessers Win!\nWord was {cw}\n'.format(cw=chosenWord)
-                sendGamePacket(hangmanSegments, guessedCharacters, chosenWord, playerNum, conn_list)
+                # TODO: Error fixed Word not being displayed
+                gameWinMsg = 'Guessers Win! Word was {cw}'.format(cw=chosenWord)
+                #sendGamePacket(hangmanSegments, guessedCharacters, chosenWord, playerNum, conn_list)
                 broadcastMsgPacket(conn_list, gameWinMsg.encode('utf-8'))
                 print('Guessers Win!')
                 conn_list.append(conn_list.pop(0))
@@ -134,8 +134,8 @@ def server(server_port):
                 continue
 
             if hangmanSegments == 0:
-                gameOverMsg = 'Chooser Wins!\nWord was {cw}\n'.format(cw=chosenWord)
-                sendGamePacket(hangmanSegments, guessedCharacters, chosenWord, playerNum, conn_list)
+                gameOverMsg = 'Chooser Wins! Word was {cw}'.format(cw=chosenWord)
+                #sendGamePacket(hangmanSegments, guessedCharacters, chosenWord, playerNum, conn_list)
                 broadcastMsgPacket(conn_list, gameOverMsg.encode('utf-8'))
                 print("Game Over!")
                 print("Word was: ",chosenWord)
