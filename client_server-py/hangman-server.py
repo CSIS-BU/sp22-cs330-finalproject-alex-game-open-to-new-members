@@ -101,7 +101,7 @@ def server(server_port):
                     # guessedLetter = input( 'Please chose a letter to guess.  ').upper()
                     sendMsgPacket(conn_list[playerNum+1],b'Please chose a letter to guess: ')
                     guessedLetter = recvStringPacket(conn_list[playerNum+1]).upper()
-                    if(guessedLetter.isalpha() == True or len(guessedLetter) == 1):
+                    if(guessedLetter.isalpha() == True and len(guessedLetter) == 1):
                         check = guessedCharacters.index(guessedLetter)
                         sendMsgPacket(conn_list[playerNum+1],b'Character already chosen\n')
                     guessedLetter = ''
