@@ -124,7 +124,7 @@ def server(server_port):
             if chosenWord == ''.join(currentWord):
                 # TODO: Error fixed Word not being displayed
                 gameWinMsg = 'Guessers Win! Word was {cw}'.format(cw=chosenWord)
-                #sendGamePacket(hangmanSegments, guessedCharacters, chosenWord, playerNum, conn_list)
+                sendGamePacket(hangmanSegments, guessedCharacters, chosenWord, playerNum, conn_list)
                 broadcastMsgPacket(conn_list, gameWinMsg.encode('utf-8'))
                 print('Guessers Win!')
                 conn_list.append(conn_list.pop(0))
@@ -135,7 +135,7 @@ def server(server_port):
 
             if hangmanSegments == 0:
                 gameOverMsg = 'Chooser Wins! Word was {cw}'.format(cw=chosenWord)
-                #sendGamePacket(hangmanSegments, guessedCharacters, chosenWord, playerNum, conn_list)
+                sendGamePacket(hangmanSegments, guessedCharacters, chosenWord, playerNum, conn_list)
                 broadcastMsgPacket(conn_list, gameOverMsg.encode('utf-8'))
                 print("Game Over!")
                 print("Word was: ",chosenWord)
