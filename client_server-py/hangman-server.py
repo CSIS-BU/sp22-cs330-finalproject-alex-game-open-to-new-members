@@ -25,7 +25,7 @@ def startNewGame(conn_list,sock):
             print(currPlayerMsg[:-1])
         
 
-        sgMsg = '{ql} players. Ready to start the game!\n'.format(ql=QUEUE_LENGTH)
+        sgMsg = '{ql} players. Waiting for word guesser to guess word\n'.format(ql=QUEUE_LENGTH)
         broadcastMsgPacket(conn_list,sgMsg.encode('utf-8'))
         print(sgMsg[:-1])
 
@@ -34,7 +34,7 @@ def startNewGame(conn_list,sock):
 def inputChooseWord(conn_list):
         #Getting the chosenWord from the first player in the connection list
         # (Remove later)chosenWord = input('Please chose the Word to guess. ').upper()
-        sendMsgPacket(conn_list[0],b'Please chose the Word to guess: ')
+        sendMsgPacket(conn_list[0],b'#Please chose the Word to guess: ')
         return recvStringPacket(conn_list[0]).upper()
 
 def recvPacket(connection):
@@ -45,7 +45,8 @@ def recvStringPacket(connection):
     return recvPacket(connection).decode("utf-8",errors='ignore')
 
 def sendMsgPacket(connection,msg):
-    sendmsg = connection.sendall(msg)
+    formatMsg = msg
+    sendmsg = connection.sendall(formatMsg)
 
 def broadcastMsgPacket(conn_list,msg):
     for conn in conn_list:
@@ -99,11 +100,11 @@ def server(server_port):
             while guessedLetter == '':
                 try:
                     # guessedLetter = input( 'Please chose a letter to guess.  ').upper()
-                    sendMsgPacket(conn_list[playerNum+1],b'Please chose a letter to guess: ')
+                    sendMsgPacket(conn_list[playerNum+1],b'#Please chose a letter to guess: ')
                     guessedLetter = recvStringPacket(conn_list[playerNum+1]).upper()
                     if(guessedLetter.isalpha() == True and len(guessedLetter) == 1):
                         check = guessedCharacters.index(guessedLetter)
-                        sendMsgPacket(conn_list[playerNum+1],b'Character already chosen\n')
+                        sendMsgPacket(conn_list[playerNum+1],b'#(Already chosen) choose another char: ')
                     guessedLetter = ''
                 except ValueError as e:
                     guessedCharacters.append(guessedLetter)
@@ -121,7 +122,9 @@ def server(server_port):
                 hangmanSegments -= 1
 
             if chosenWord == ''.join(currentWord):
+                # Error fixed Word not being displayed
                 gameWinMsg = 'Guessers Win!\nWord was {cw}\n'.format(cw=chosenWord)
+                sendGamePacket(hangmanSegments, guessedCharacters, chosenWord, playerNum, conn_list)
                 broadcastMsgPacket(conn_list, gameWinMsg.encode('utf-8'))
                 print('Guessers Win!')
                 conn_list.append(conn_list.pop(0))
@@ -132,6 +135,7 @@ def server(server_port):
 
             if hangmanSegments == 0:
                 gameOverMsg = 'Chooser Wins!\nWord was {cw}\n'.format(cw=chosenWord)
+                sendGamePacket(hangmanSegments, guessedCharacters, chosenWord, playerNum, conn_list)
                 broadcastMsgPacket(conn_list, gameOverMsg.encode('utf-8'))
                 print("Game Over!")
                 print("Word was: ",chosenWord)

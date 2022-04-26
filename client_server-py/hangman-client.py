@@ -81,13 +81,16 @@ def client(server_ip, server_port):
                 
                 else:
                     screen.addstr(13,0,'                                                                  ')
-                    screen.addstr(13,0,data.decode('utf-8'))
+                    if strData[0] == '#':
+                        screen.addstr(13,0,data.decode('utf-8')[1:])
+                    else:
+                        screen.addstr(13,0,data.decode('utf-8'))
                     screen.refresh()
                     #sys.stdout.buffer.raw.write(data)
 
-                if(data.decode('utf8') == 'Please chose a letter to guess: ' or data.decode('utf8') == 'Please chose the Word to guess: '):
+                if(data.decode('utf8')[0] == '#'):
                     #msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
-                    msg = screen.getstr(13,34,20)
+                    msg = screen.getstr(13,34,50)
                     sendmsg = sock.sendall(msg)   
                 
                 #screen.clear()
