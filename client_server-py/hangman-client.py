@@ -9,6 +9,8 @@ import random
 import string
 import curses
 
+def renderData():
+    pass
 
 # Size of chunks the client sends messages to the server with
 RECV_BUFFER_SIZE = 2048
@@ -29,29 +31,31 @@ def client(server_ip, server_port):
 
         # WHile a connection is open send all of the data rom the input stream to the server in chunks the size of SEND_BUFFER_SIZE
         with open(0,'rb'):
+            #Preparing to initialize screen...
+            screen = curses.initscr()
+            # Wipe the screen buffer and set the cursor to 0,0
+            screen.clear()
+            screen.nodelay(False)
+            curses.echo()        
+            # Update the buffer, adding text
+            screen.addstr(0,0,'Lets begin the game of hangman')
+            displaySegments(6)
+            screen.refresh()
             while True:
-            
-                #Preparing to initialize screen...
-                screen = curses.initscr()
-                # Wipe the screen buffer and set the cursor to 0,0
-                screen.clear()          
-                # Update the buffer, adding text
-                screen.addstr(0,0,'Lets begin the game of hangman')
                 # Changes go in to the screen buffer and only get displayed after calling `refresh()` to update
-                screen.refresh()
-        
-                
                 data = (sock.recv(RECV_BUFFER_SIZE))
                 strData = data.decode('utf-8')
                 parsedData = strData.split('|')
                 
                 if parsedData[0] == '!':
+                    screen.clear()
+                    screen.addstr(0,0,'Lets begin the game of hangman')
                     #print("parsedData:",parsedData)
                     # Parse segments
                     hangmanSegments = int(parsedData[1][-1])
                     #print("segments:",hangmanSegments)
                     #print(displaySegments(hangmanSegments))
-                    screen.addstr(0,0,displaySegments(hangmanSegments))
+                    screen.addstr(1,0,displaySegments(hangmanSegments))
                     
                     # Parse guessedCharacters
                     guessedCharacters = []
@@ -60,31 +64,35 @@ def client(server_ip, server_port):
                     for index in range(len(gCharList)):
                         if gCharList[index].isalpha() == True:
                             guessedCharacters.append(gCharList[index])
-                    print('guessedCharacters:',guessedCharacters)
+                    #print('guessedCharacters:',guessedCharacters)
+                    # Create a formatted guess Characters Input
 
                     # Parse currentWord
                     currentWord = parsedData[3][parsedData[3].find(':')+1:]
                     #print('currentWord: ', currentWord)
-                    screen.addstr(1,0, currentWord)
+                    screen.addstr(11,0, 'Current Guess: '+currentWord)
                    
                     # Parse playerNum
                     playerNum = parsedData[4][-1]
                     #print('playerNum:',playerNum)
-                    screen.addstr(2,0, playerNum)
-
+                    screen.addstr(12,0, 'Player '+playerNum+'s turn.')
+                    
                     screen.refresh()
                 
                 else:
-                    
-                    sys.stdout.buffer.raw.write(data)
+                    screen.addstr(13,0,data.decode('utf-8'))
+                    screen.refresh()
+                    #sys.stdout.buffer.raw.write(data)
 
                 if(data.decode('utf8') == 'Please chose a letter to guess: ' or data.decode('utf8') == 'Please chose the Word to guess: '):
-                    msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
+                    #msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
+                    msg = screen.getstr(13,34,20)
                     sendmsg = sock.sendall(msg)   
                 
-                screen.clear()
-                screen.refresh()  
-                curses.endwin()
+                #screen.clear()
+                #screen.refresh()  
+                #curses.endwin()
+            curses.endwin()
             sys.stdout.flush()
 
 

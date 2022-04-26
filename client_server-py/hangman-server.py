@@ -10,7 +10,7 @@ from typing import Counter
 
 SEND_BUFFER_SIZE = 2048
 RECV_BUFFER_SIZE = 2048
-QUEUE_LENGTH = 2
+QUEUE_LENGTH = 3
 
 # Loops until a connection is accepted
 # Wait for four people to connect to start the game
@@ -100,7 +100,7 @@ def server(server_port):
                     # guessedLetter = input( 'Please chose a letter to guess.  ').upper()
                     sendMsgPacket(conn_list[playerNum+1],b'Please chose a letter to guess: ')
                     guessedLetter = recvStringPacket(conn_list[playerNum+1]).upper()
-                    if(guessedLetter != ''):
+                    if(guessedLetter.isalpha() == False or len(guessedLetter) != 1):
                         check = guessedCharacters.index(guessedLetter)
                         sendMsgPacket(conn_list[playerNum+1],b'Character already chosen\n')
                     guessedLetter = ''
