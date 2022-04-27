@@ -67,7 +67,7 @@ def client(server_ip, server_port):
                             if gCharList[index].isalpha() == True:
                                 guessedCharacters.append(gCharList[index])
                         #print('guessedCharacters:',guessedCharacters)
-                        gCharMsg = 'guessedCharacters: ' + ', '.join(guessedCharacters)
+                        gCharMsg = 'guessedCharacters: ' + ','.join(guessedCharacters)
                         screen.addstr(10,0,gCharMsg)
 
                         # Parse currentWord
