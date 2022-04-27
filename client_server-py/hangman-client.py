@@ -31,93 +31,114 @@ def client(server_ip, server_port):
 
         # WHile a connection is open send all of the data rom the input stream to the server in chunks the size of SEND_BUFFER_SIZE
         with open(0,'rb'):
-            #Preparing to initialize screen...
-            screen = curses.initscr()
-            # Wipe the screen buffer and set the cursor to 0,0
-            screen.clear()
-            screen.nodelay(False)
-            curses.noecho()
-            screen.keypad(True)        
-            # Update the buffer, adding text
-            screen.addstr(0,0,'Lets begin the game of hangman')
-            displaySegments(6)
-            screen.refresh()
-            while True:
-                # Changes go in to the screen buffer and only get displayed after calling `refresh()` to update
-                data = (sock.recv(RECV_BUFFER_SIZE))
-                strData = data.decode('utf-8')
-                parsedData = strData.split('|')
-                
-                if parsedData[0] == '!':
-                    screen.clear()
-                    screen.addstr(0,0,'Lets begin the game of hangman')
-                    #print("parsedData:",parsedData)
-                    # Parse segments
-                    hangmanSegments = int(parsedData[1][-1])
-                    #print("segments:",hangmanSegments)
-                    #print(displaySegments(hangmanSegments))
-                    screen.addstr(1,0,displaySegments(hangmanSegments))
+            try:
+                #Preparing to initialize screen...
+                screen = curses.initscr()
+                # Wipe the screen buffer and set the cursor to 0,0
+                screen.clear()
+                screen.nodelay(False)
+                curses.noecho()
+                screen.keypad(True)        
+                # Update the buffer, adding text
+                screen.addstr(0,0,'Lets begin the game of hangman')
+                displaySegments(6)
+                screen.refresh()
+                while True:
+                    # Changes go in to the screen buffer and only get displayed after calling `refresh()` to update
+                    data = (sock.recv(RECV_BUFFER_SIZE))
+                    strData = data.decode('utf-8')
+                    parsedData = strData.split('|')
                     
-                    # Parse guessedCharacters
-                    guessedCharacters = []
-                    gCharString = parsedData[2][parsedData[2].find(':')+1:]
-                    gCharList = list(gCharString)
-                    for index in range(len(gCharList)):
-                        if gCharList[index].isalpha() == True:
-                            guessedCharacters.append(gCharList[index])
-                    #print('guessedCharacters:',guessedCharacters)
-                    # Create a formatted guess Characters Input
+                    if parsedData[0] == '!':
+                        screen.clear()
+                        screen.addstr(0,0,'Lets begin the game of hangman')
+                        #print("parsedData:",parsedData)
+                        # Parse segments
+                        hangmanSegments = int(parsedData[1][-1])
+                        #print("segments:",hangmanSegments)
+                        #print(displaySegments(hangmanSegments))
+                        screen.addstr(1,0,displaySegments(hangmanSegments))
+                        
+                        # Parse guessedCharacters
+                        guessedCharacters = []
+                        gCharString = parsedData[2][parsedData[2].find(':')+1:]
+                        gCharList = list(gCharString)
+                        for index in range(len(gCharList)):
+                            if gCharList[index].isalpha() == True:
+                                guessedCharacters.append(gCharList[index])
+                        #print('guessedCharacters:',guessedCharacters)
+                        # Create a formatted guess Characters Input
 
-                    # Parse currentWord
-                    currentWord = parsedData[3][parsedData[3].find(':')+1:]
-                    #print('currentWord: ', currentWord)
-                    screen.addstr(11,0, 'Current Guess: '+currentWord)
-                   
-                    # Parse playerNum
-                    playerNum = parsedData[4][-1]
-                    #print('playerNum:',playerNum)
-                    screen.addstr(12,0, 'Player '+playerNum+'s turn.')
+                        # Parse currentWord
+                        currentWord = parsedData[3][parsedData[3].find(':')+1:]
+                        #print('currentWord: ', currentWord)
+                        screen.addstr(11,0, 'Current Guess: '+currentWord)
                     
-                    screen.refresh()
-                
-                else:
-                    screen.addstr(13,0,'                                                                  ')
-                    if data.decode('utf8')[0] == '#':
-                        screen.addstr(13,0,data.decode('utf-8')[1:])
+                        # Parse playerNum
+                        playerNum = parsedData[4][-1]
+                        #print('playerNum:',playerNum)
+                        screen.addstr(12,0, 'Player '+playerNum+'s turn.')
+                        
+                        screen.refresh()
+                    
                     else:
-                        screen.addstr(13,0,data.decode('utf-8'))
-                    screen.refresh()
-                    #sys.stdout.buffer.raw.write(data)
+                        screen.addstr(13,0,'                                                                  ')
+                        if data.decode('utf8')[0] == '#':
+                            screen.addstr(13,0,data.decode('utf-8')[1:])
+                        else:
+                            screen.addstr(13,0,data.decode('utf-8'))
+                        screen.refresh()
+                        #sys.stdout.buffer.raw.write(data)
 
-                if(data.decode('utf8')[0] == '#'):
-                    #msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
-                    msg = []
-                    try:
-                        while True:
-                            c = screen.getch()
-                            if c == curses.KEY_ENTER or c == 10 or c == 13:
-                                if len(msg) == 0:
-                                    continue
-                                break
-                            if c == 8 or c == 127 or c == curses.KEY_BACKSPACE:
-                                if len(msg) > 0:
-                                    msg = msg[:-1]
-                                    screen.addstr("\b \b")
-                            else:
-                                msg.append(chr(c))
-                                msgStream = "".join(msg)
-                                screen.addstr(13,34,msgStream)
-                            screen.refresh()
-                        sendmsg = sock.sendall(''.join(msg).encode('utf-8'))
-                    except KeyboardInterrupt:
-                        curses.noecho()
-                        curses.endwin()
-                
-                #screen.clear()
-                #screen.refresh()  
-                #curses.endwin()
-            curses.endwin()
-            sys.stdout.flush()
+                    if(data.decode('utf8')[0] == '#'):
+                        #msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
+                        msg = []
+                        try:
+                            while True:
+                                c = screen.getch()
+                                if c == curses.KEY_ENTER or c == 10 or c == 13:
+                                    if len(msg) == 0:
+                                        continue
+                                    break
+                                if c == 8 or c == 127 or c == curses.KEY_BACKSPACE:
+                                    if len(msg) > 0:
+                                        msg = msg[:-1]
+                                        screen.addstr("\b \b")
+                                else:
+                                    msg.append(chr(c))
+                                    msgStream = "".join(msg)
+                                    screen.addstr(13,34,msgStream)
+                                screen.refresh()
+                            sendmsg = sock.sendall(''.join(msg).encode('utf-8'))
+                        except KeyboardInterrupt:
+                            screen.clear()
+                            curses.echo()
+                            screen.nodelay(True)
+                            #client(screen)
+                            #setting screen back to normal
+                            screen.keypad(0)
+                            curses.echo() 
+                            curses.nocbreak()
+                            curses.endwin()
+                            exit()
+                            
+                    
+                    #screen.clear()
+                    #screen.refresh()  
+                    #curses.endwin()
+                curses.endwin()
+                sys.stdout.flush()
+            except KeyboardInterrupt:
+                    screen.clear()
+                    curses.echo()
+                    screen.nodelay(True)
+                    #client(screen)
+                    #setting screen back to normal
+                    screen.keypad(0)
+                    curses.echo() 
+                    curses.nocbreak()
+                    curses.endwin()
+                    exit()
 
 
 def displaySegments(hangmanSegments):
