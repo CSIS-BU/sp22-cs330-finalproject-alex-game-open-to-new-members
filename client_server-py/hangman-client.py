@@ -1,6 +1,6 @@
 ###############################################################################
 # client-python.py
-# Name: Alex Hoerr, Simfara, Srushti
+# Name: Alex Hoerr, Simfara
 ###############################################################################
 
 import sys
@@ -92,37 +92,26 @@ def client(server_ip, server_port):
                 if(data.decode('utf8')[0] == '#'):
                     #msg = sys.stdin.buffer.raw.read(SEND_BUFFER_SIZE)
                     msg = []
-                    while True:
-                        c = screen.getch()
-                        if c == curses.KEY_ENTER or c == 10 or c == 13:
-                            if len(msg) == 0:
-                                continue
-                            break
-                        if c == 8 or c == 127 or c == curses.KEY_BACKSPACE:
-                            if len(msg) > 0:
-                                msg = msg[:-1]
-                                screen.addstr("\b \b")
-                        else:
-                            msg.append(chr(c))
-                            msgStream = "".join(msg)
-                            screen.addstr(13,34,msgStream)
-                        screen.refresh()
-                  
-                  #escape sequence using ctrl+C
-                  try:
-                    screen.keypad(1)
-                    client(screen)
-                    #setting screen back to normal
-                    screen.keypad(0)
-                    curses.echo(); curses.nocbreak
-                    curses.endwin()
-                  #in the case of an error, restore terminal
-                  except:
-                    screen.keypad(0)
-                    curses.echo(); curses.nocbreak()
-                    curses.endwin()
-                    
-                sendmsg = sock.sendall(''.join(msg).encode('utf-8'))
+                    try:
+                        while True:
+                            c = screen.getch()
+                            if c == curses.KEY_ENTER or c == 10 or c == 13:
+                                if len(msg) == 0:
+                                    continue
+                                break
+                            if c == 8 or c == 127 or c == curses.KEY_BACKSPACE:
+                                if len(msg) > 0:
+                                    msg = msg[:-1]
+                                    screen.addstr("\b \b")
+                            else:
+                                msg.append(chr(c))
+                                msgStream = "".join(msg)
+                                screen.addstr(13,34,msgStream)
+                            screen.refresh()
+                        sendmsg = sock.sendall(''.join(msg).encode('utf-8'))
+                    except KeyboardInterrupt:
+                        curses.noecho()
+                        curses.endwin()
                 
                 #screen.clear()
                 #screen.refresh()  
