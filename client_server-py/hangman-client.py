@@ -17,7 +17,7 @@ RECV_BUFFER_SIZE = 2048
 SEND_BUFFER_SIZE = 2048
 # client(): Open socket and send message from sys.stdin
 def client(server_ip, server_port):
-
+    # Declaring Variables
     hangmanSegments = 0
     guessedCharacters = []
     currentWord = ''
@@ -37,26 +37,29 @@ def client(server_ip, server_port):
                 # Wipe the screen buffer and set the cursor to 0,0
                 screen.clear()
                 screen.nodelay(False)
+                # enable to read keys and only display them under certain circumstances
                 curses.noecho()
                 screen.keypad(True)        
                 # Update the buffer, adding text
-                screen.addstr(0,0,'Lets begin the game of hangman')
+                screen.addstr(0,0,'Let\'s begin the game of hangman!')
                 displaySegments(6)
+                # update the terminal and reflect changes made to the window
+                # Changes go in to the screen buffer and only get displayed after calling `refresh()` to update
                 screen.refresh()
                 while True:
-                    # Changes go in to the screen buffer and only get displayed after calling `refresh()` to update
                     data = (sock.recv(RECV_BUFFER_SIZE))
                     strData = data.decode('utf-8')
                     parsedData = strData.split('|')
                     
                     if parsedData[0] == '!':
                         screen.clear()
-                        screen.addstr(0,0,'Lets begin the game of hangman')
+                        screen.addstr(0,0,'Let\'s begin the game of hangman!')
                         #print("parsedData:",parsedData)
                         # Parse segments
                         hangmanSegments = int(parsedData[1][-1])
                         #print("segments:",hangmanSegments)
                         #print(displaySegments(hangmanSegments))
+                        # Addstr() displays the output in the provided x-y coordinate of the screen
                         screen.addstr(1,0,displaySegments(hangmanSegments))
                         
                         # Parse guessedCharacters
@@ -141,7 +144,8 @@ def client(server_ip, server_port):
                     curses.endwin()
                     exit()
 
-
+# function that displays the state of the hangman 
+# takes in hangmanSegments as its parameter and returns the corresponding string state
 def displaySegments(hangmanSegments):
     states = [  # 0: last state (GAME OVER!)
                 """
@@ -215,6 +219,7 @@ def displaySegments(hangmanSegments):
                 """
     ]
     return states[hangmanSegments]
+    
 def main():
     """Parse command-line arguments and call client function """
     if len(sys.argv) != 3:
