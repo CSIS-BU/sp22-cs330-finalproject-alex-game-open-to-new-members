@@ -29,7 +29,7 @@ def client(server_ip, server_port):
         # Connects to the server using the ip and port the user specified
         sock.connect((server_ip, server_port))
 
-        # WHile a connection is open send all of the data rom the input stream to the server in chunks the size of SEND_BUFFER_SIZE
+        # While a connection is open send all of the data rom the input stream to the server in chunks the size of SEND_BUFFER_SIZE
         with open(0,'rb'):
             try:
                 #Preparing to initialize screen...
@@ -57,7 +57,7 @@ def client(server_ip, server_port):
                         hangmanSegments = int(parsedData[1][-1])
                         #print("segments:",hangmanSegments)
                         #print(displaySegments(hangmanSegments))
-                        screen.addstr(1,0,displaySegments(hangmanSegments))
+                        screen.addstr(2,0,displaySegments(hangmanSegments))
                         
                         # Parse guessedCharacters
                         guessedCharacters = []
@@ -83,10 +83,15 @@ def client(server_ip, server_port):
                         screen.refresh()
                     
                     else:
-                        screen.addstr(13,0,'                                                                  ')
+                        
                         if data.decode('utf8')[0] == '#':
-                            screen.addstr(13,0,data.decode('utf-8')[1:])
+                            screen.addstr(14,0,'                                                                  ')
+                            screen.addstr(14,0,data.decode('utf-8')[1:])
+                        elif data.decode('utf8')[0] == '*':
+                            screen.addstr(1,0,'                                                                  ')
+                            screen.addstr(1,0,data.decode('utf-8')[1:])
                         else:
+                            screen.addstr(13,0,'                                                                  ')
                             screen.addstr(13,0,data.decode('utf-8'))
                         screen.refresh()
                         #sys.stdout.buffer.raw.write(data)
@@ -108,7 +113,7 @@ def client(server_ip, server_port):
                                 else:
                                     msg.append(chr(c))
                                     msgStream = "".join(msg)
-                                    screen.addstr(13,34,msgStream)
+                                    screen.addstr(14,34,msgStream)
                                 screen.refresh()
                             sendmsg = sock.sendall(''.join(msg).encode('utf-8'))
                         except KeyboardInterrupt:
@@ -129,7 +134,7 @@ def client(server_ip, server_port):
                     #curses.endwin()
                 curses.endwin()
                 sys.stdout.flush()
-            except KeyboardInterrupt:
+            except:
                     screen.clear()
                     curses.echo()
                     screen.nodelay(True)

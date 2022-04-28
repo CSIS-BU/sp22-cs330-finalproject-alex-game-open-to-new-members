@@ -6,6 +6,7 @@
 
 import sys
 import socket
+import time
 from typing import Counter
 
 SEND_BUFFER_SIZE = 2048
@@ -20,9 +21,9 @@ def startNewGame(conn_list,sock):
             connection, address = sock.accept()
             conn_list += [connection]
             print("Connection from {ip} on port {port}".format(ip=address[0], port=address[1]))
-            currPlayerMsg = "Currently {cnlen}/{ql} players. ".format(cnlen=len(conn_list),ql=QUEUE_LENGTH)
+            currPlayerMsg = "*Currently {cnlen}/{ql} players. ".format(cnlen=len(conn_list),ql=QUEUE_LENGTH)
             broadcastMsgPacket(conn_list,currPlayerMsg.encode('utf-8'))
-            print(currPlayerMsg[:-1])
+            print(currPlayerMsg[1:-1])
         
         # Sends a message to users that the word guesser is choosing a new word (polish)
         sgMsg = '{ql} players. Waiting for word guesser to guess word '.format(ql=QUEUE_LENGTH)
@@ -47,6 +48,7 @@ def recvStringPacket(connection):
 # Sends Packets to the client
 def sendMsgPacket(connection,msg):
     sendmsg = connection.sendall(msg)
+    time.sleep(0.1)
 
 # Sends the message packet to all clients
 def broadcastMsgPacket(conn_list,msg):
@@ -129,7 +131,7 @@ def server(server_port):
             # Pieces of code decide the win condition of both the chooser and Guessers
             # Guessers win if all letters of the chosen word are figured out, chooers wins if full hangman is drawn
             if chosenWord == ''.join(currentWord):
-                gameWinMsg = 'Guessers Win! Word was {cw}'.format(cw=chosenWord)
+                gameWinMsg = '*Guessers Win! Word was {cw}'.format(cw=chosenWord)
                 sendGamePacket(hangmanSegments, guessedCharacters, chosenWord, playerNum, conn_list)
                 broadcastMsgPacket(conn_list, gameWinMsg.encode('utf-8'))
                 print('Guessers Win!')
@@ -140,7 +142,7 @@ def server(server_port):
                 continue
 
             if hangmanSegments == 0:
-                gameOverMsg = 'Chooser Wins! Word was {cw}'.format(cw=chosenWord)
+                gameOverMsg = '*Chooser Wins! Word was {cw}'.format(cw=chosenWord)
                 sendGamePacket(hangmanSegments, guessedCharacters, chosenWord, playerNum, conn_list)
                 broadcastMsgPacket(conn_list, gameOverMsg.encode('utf-8'))
                 print("Game Over!")
