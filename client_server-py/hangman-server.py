@@ -34,8 +34,13 @@ def startNewGame(conn_list,sock):
 
 # Getting the chosenWord from the first player in the connection list (Word Guesser)
 def inputChooseWord(conn_list):
-        sendMsgPacket(conn_list[0],b'#Please chose the Word to guess: ')
-        return recvStringPacket(conn_list[0]).upper()
+        chosenWord = ''
+        while chosenWord == '':
+            sendMsgPacket(conn_list[0],b'#Please chose the Word to guess: ')
+            chosenWord = recvStringPacket(conn_list[0]).upper()
+            if chosenWord.isalpha() == False or len(chosenWord) == 0:
+                chosenWord = ''
+        return chosenWord
 
 # Recieves packets from clients
 def recvPacket(connection):
